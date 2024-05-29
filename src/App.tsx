@@ -13,12 +13,12 @@ const App = () => {
         <header className="lg:hidden p-3">
           <img src={Logo} alt="" className="" />
         </header>
-        <section className="bg-left relative hidden lg:block">
+        <section className="bg-left items-center relative hidden lg:flex">
           <img src={Logo} alt="" className="absolute left-10 top-5" />
           <img
             src={Kwara}
             alt=""
-            className="absolute bottom-1/3 left-1/4 -translate-x-1/2 kwara"
+            className="m-auto kwara"
           />
           <div className="absolute bottom-10 left-10 flex items-center">
             <p className="text-gray-500">Powered by</p>

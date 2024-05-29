@@ -3,6 +3,7 @@ import CustomField from "./CustomField";
 import useSelectOptions from "../hooks/useSelectOptions";
 import { useStore } from "../store";
 import useRequest from "../hooks/useRequest";
+import { SubmitButton } from "./SubmitButton";
 
 const PersonalInfo: React.FC = () => {
   const state = useStore((state) => state);
@@ -28,6 +29,10 @@ const PersonalInfo: React.FC = () => {
         value: 1,
       }}
       fields={[
+        {
+          name: "noOfSpouse",
+          value: state.request?.noOfSpouse ?? 1
+        },
         {
           name: "spouse",
           value: state.request?.noOfSpouse
@@ -222,6 +227,8 @@ const PersonalInfo: React.FC = () => {
             <CustomField
               placeholder="Enter number of spouse"
               label="No of spouse"
+              type="number"
+
               onChange={(e) => onSetFieldRequest("noOfSpouse", e.target.value)}
               required
             />
@@ -274,6 +281,7 @@ const PersonalInfo: React.FC = () => {
           </Form.List>
         </>
       )}
+      <SubmitButton form={form}>Submit</SubmitButton>
     </Form>
   );
 };

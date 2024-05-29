@@ -83,7 +83,7 @@ const NINValidation: React.FC = () => {
           required
         />
       </Form.Item>
-      <SubmitButton form={form}>Submit</SubmitButton>
+      <SubmitButton form={form}>Proceed</SubmitButton>
     </Form>
   );
 };

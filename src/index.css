@@ -1,0 +1,42 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@font-face {
+  font-family: "euclid-bold";
+  src: url("./assets/fonts/Euclid Circular A Bold.ttf");
+}
+@font-face {
+  font-family: "euclid-semibold";
+  src: url("./assets/fonts/Euclid Circular A SemiBold.ttf");
+}
+@font-face {
+  font-family: "euclid-regular";
+  src: url("./assets/fonts/Euclid Circular A Regular.ttf");
+}
+
+body {
+  font-family: "euclid-regular";
+}
+
+.bg-left {
+  background: url("./assets/images/pattern.svg");
+}
+
+.kwara {
+  animation: kwara 2500ms infinite alternate;
+}
+
+@keyframes kwara {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+input {
+    outline: none;
+    border: none;
+}

@@ -31,7 +31,7 @@ const PersonalInfo: React.FC = () => {
       fields={[
         {
           name: "noOfSpouse",
-          value: state.request?.noOfSpouse ?? 1
+          value: state.request?.noOfSpouse ?? 1,
         },
         {
           name: "spouse",
@@ -104,7 +104,9 @@ const PersonalInfo: React.FC = () => {
         name="houseType"
         rules={[{ required: true, message: "House type is required" }]}
       >
-        <Radio.Group onChange={(e) => onSetFieldRequest("houseType", e.target.value)}>
+        <Radio.Group
+          onChange={(e) => onSetFieldRequest("houseType", e.target.value)}
+        >
           <Radio value="yes" className="text-[#8B98B9]">
             Yes
           </Radio>
@@ -142,7 +144,9 @@ const PersonalInfo: React.FC = () => {
         name="arrestType"
         rules={[{ required: true, message: "House type is required" }]}
       >
-        <Radio.Group onChange={(e) => onSetFieldRequest("arrestType", e.target.value)}>
+        <Radio.Group
+          onChange={(e) => onSetFieldRequest("arrestType", e.target.value)}
+        >
           <Radio value="yes" className="text-[#8B98B9]">
             Yes
           </Radio>
@@ -228,7 +232,6 @@ const PersonalInfo: React.FC = () => {
               placeholder="Enter number of spouse"
               label="No of spouse"
               type="number"
-
               onChange={(e) => onSetFieldRequest("noOfSpouse", e.target.value)}
               required
             />

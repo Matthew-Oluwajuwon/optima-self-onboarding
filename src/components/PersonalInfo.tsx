@@ -165,12 +165,26 @@ const PersonalInfo: React.FC = () => {
             selectPlaceholder="Select offense"
             type="select"
             loading={state.processing}
+            onChange={(e) => onSetFieldRequest("offenseType", e)}
             required
             onFocus={onOffenses}
             options={state.offenses.map((offense) => ({
               label: offense,
               value: offense,
             }))}
+          />
+        </Form.Item>
+      )}
+      {state.request?.offenseType?.toLowerCase().includes("other") && (
+        <Form.Item
+          name="specificOffense"
+          rules={[{ required: true, message: "Offense type is required" }]}
+          className="w-full"
+        >
+          <CustomField
+            placeholder="Specify offense"
+            label="Please specify..."
+            required
           />
         </Form.Item>
       )}

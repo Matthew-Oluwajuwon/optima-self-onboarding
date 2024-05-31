@@ -22,4 +22,20 @@ export class SubmitOnabording {
   address: string = "";
   annualRent: number = 0;
   crimeType: string = "";
+  specifyCrimeType: string = "";
+  spouseList: SpouseList[] = [];
+  childList: ChildList[] = [];
+}
+
+export class SpouseList {
+  name: string = "";
+  phoneNumber: string = "";
+}
+
+export class ChildList {
+  name: string = "";
+  age: number = 0;
+  inSchool: boolean = false;
+  phoneNumber: string = "";
+  schoolName: string = "";
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Col, Divider, Form, Radio, Row } from "antd";
+import { Checkbox, Col, Divider, Form, Radio, Row } from "antd";
 import CustomField from "./CustomField";
 import useSelectOptions from "../hooks/useSelectOptions";
 import { useStore } from "../store";
@@ -8,6 +8,7 @@ import { SubmitButton } from "./SubmitButton";
 import useSubmitOnboarding from "../hooks/useSubmitOnboarding";
 import ResponseModal from "./ResponseModal";
 import OtpModal from "./OtpModal";
+import { useState } from "react";
 
 const PersonalInfo: React.FC = () => {
   const state = useStore((state) => state);
@@ -17,6 +18,30 @@ const PersonalInfo: React.FC = () => {
   const { onGender, onReligion, onLga, onOffenses, onMaritalStatus } =
     useSelectOptions();
 
+  // Local state to manage checkboxes in the Form List
+  const [checkboxStates, setCheckboxStates] = useState<any>({});
+
+  const handleCheckboxChange = (
+    index: number,
+    key: string,
+    value: string | boolean | number
+  ) => {
+    setCheckboxStates({
+      ...checkboxStates,
+      [index]: value,
+    });
+    // Optionally, update your global state if necessary
+    const updatedChildList = [...(state.request?.childList || [])];
+    updatedChildList[index] = { ...updatedChildList[index], [key]: value };
+    onSetFieldRequest("childList", updatedChildList);
+  };
+
+  const onChangeFormList = (index: number, key: string, value: string | number) => {
+    const updatedSpouseList = [...(state.request?.spouseList || [])];
+    updatedSpouseList[index] = { ...updatedSpouseList[index], [key]: value };
+    onSetFieldRequest("spouseList", updatedSpouseList);
+  };
+
   return (
     <Form
       form={form}
@@ -25,10 +50,6 @@ const PersonalInfo: React.FC = () => {
       requiredMark="optional"
       autoComplete="true"
       className="w-full mt-10 lg:max-w-lg lg:mx-auto"
-      initialValues={{
-        name: "noOfSpouse",
-        value: 1,
-      }}
       fields={[
         {
           name: "noOfSpouse",
@@ -39,7 +60,16 @@ const PersonalInfo: React.FC = () => {
           value: state.request?.annualRent,
         },
         {
-          name: "spouse",
+          name: "spouseList",
+          value: state.request?.noOfSpouse
+            ? Array.from(
+                { length: Number(state.request?.noOfSpouse) },
+                () => ({})
+              )
+            : [0],
+        },
+        {
+          name: "childList",
           value: state.request?.noOfSpouse
             ? Array.from(
                 { length: Number(state.request?.noOfSpouse) },
@@ -257,15 +287,17 @@ const PersonalInfo: React.FC = () => {
       )}
       {state.request?.crimeType?.toLowerCase().includes("other") && (
         <Form.Item
-          name="specificOffense"
-          rules={[{ required: true, message: "Offense type is required" }]}
+          name="specifyCrimeType"
+          rules={[
+            { required: true, message: "Specific crime type is required" },
+          ]}
           className="w-full"
         >
           <CustomField
             placeholder="Specify offense"
             label="Please specify..."
             onChange={(e) =>
-              onSetFieldRequest("specificOffense", e.target.value)
+              onSetFieldRequest("specifyCrimeType", e.target.value)
             }
             required
           />
@@ -325,26 +357,29 @@ const PersonalInfo: React.FC = () => {
                   }
                 },
               },
+              {
+                pattern: /^\d+$/,
+                message: "Only numbers are allowed"
+              }
             ]}
           >
             <CustomField
               placeholder="Enter number of spouse"
               label="No of spouse"
-              type="number"
               onChange={(e) => onSetFieldRequest("noOfSpouse", e.target.value)}
               required
             />
           </Form.Item>
           <Divider dashed>SPOUSE INFORMATION</Divider>
-          <Form.List name="spouse">
+          <Form.List name="spouseList">
             {(fields) => (
               <>
-                {fields.map(({ key, name, ...restField }) => (
+                {fields.map(({ key, name, ...restField }, index) => (
                   <Row key={key} className="w-full justify-between">
                     <Col xs={24} md={11}>
                       <Form.Item
                         {...restField}
-                        name={[name, "spouseName"]}
+                        name={[name, "name"]}
                         rules={[
                           { required: true, message: "Missing spouse name" },
                         ]}
@@ -353,6 +388,9 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter spouse name"
                           label="Spouse name"
+                          onChange={(e) =>
+                            onChangeFormList(index, "name", e.target.value)
+                          }
                           required
                         />
                       </Form.Item>
@@ -360,11 +398,15 @@ const PersonalInfo: React.FC = () => {
                     <Col xs={24} md={11}>
                       <Form.Item
                         {...restField}
-                        name={[name, "spousePhoneNumber"]}
+                        name={[name, "phoneNumber"]}
                         rules={[
                           {
                             required: true,
                             message: "Missing spouse phone number",
+                          },
+                          {
+                            pattern: /^0[7-9]\d{9}$/,
+                            message: "Invalid phone number",
                           },
                         ]}
                         className="w-full"
@@ -372,9 +414,149 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter spouse phone number"
                           label="Spouse phone number"
+                          onChange={(e) =>
+                            onChangeFormList(
+                              index,
+                              "phoneNumber",
+                              e.target.value
+                            )
+                          }
                           required
                         />
                       </Form.Item>
+                    </Col>
+                  </Row>
+                ))}
+              </>
+            )}
+          </Form.List>
+          <Divider dashed>CHILD INFORMATION</Divider>
+          <Form.List name="childList">
+            {(fields) => (
+              <>
+                {fields.map(({ key, name, ...restField }, index) => (
+                  <Row key={key} className="w-full justify-between">
+                    <Form.Item
+                      {...restField}
+                      name={[name, "inSchool"]}
+                      rules={[{ required: true, message: "Missing child school status" }]}
+                      className="w-full"
+                    >
+                      <>
+                        Is this child in school?{" "}
+                        <Checkbox
+                          onChange={(e) =>
+                            handleCheckboxChange(
+                              index,
+                              "inSchool",
+                              e.target.checked
+                            )
+                          }
+                          checked={checkboxStates[index]}
+                          className="ml-2"
+                        />
+                      </>
+                    </Form.Item>
+                    <Col xs={24} md={11}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "name"]}
+                        rules={[
+                          { required: true, message: "Missing child name" },
+                        ]}
+                        className="w-full"
+                      >
+                        <CustomField
+                          placeholder="Enter child name"
+                          label="Child name"
+                          onChange={(e) =>
+                            handleCheckboxChange(index, "name", e.target.value)
+                          }
+                          required
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={11}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "phoneNumber"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Missing child phone number",
+                          },
+                          {
+                            pattern: /^0[7-9]\d{9}$/,
+                            message: "Invalid phone number",
+                          },
+                        ]}
+                        className="w-full"
+                      >
+                        <CustomField
+                          placeholder="Enter child phone number"
+                          label="Child phone number"
+                          onChange={(e) =>
+                            handleCheckboxChange(
+                              index,
+                              "phoneNumber",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={11}>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "age"]}
+                        rules={[
+                          { required: true, message: "Missing child age" },
+                          {
+                            pattern: /^\d+$/,
+                            message: "Only numbers are allowed",
+                          },
+                        ]}
+                        className="w-full"
+                      >
+                        <CustomField
+                          placeholder="Enter child age"
+                          label="Child age"
+                          onChange={(e) =>
+                            handleCheckboxChange(index, "age", Number(e.target.value))
+                          }
+                          required
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={11}>
+                      {state.request?.childList &&
+                        state.request?.childList[name]?.inSchool && (
+                          <Form.Item
+                            {...restField}
+                            name={[name, "schoolName"]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Missing school name",
+                              },
+                            ]}
+                            className="w-full"
+                          >
+                            <CustomField
+                              placeholder="Enter school name"
+                              label="School name"
+                              onChange={(e) =>
+                                handleCheckboxChange(
+                                  index,
+                                  "schoolName",
+                                  e.target.value
+                                )
+                              }
+                              required
+                            />
+                          </Form.Item>
+                        )}
                     </Col>
                   </Row>
                 ))}

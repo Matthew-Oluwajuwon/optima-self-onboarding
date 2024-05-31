@@ -2,10 +2,15 @@ import { Form } from "antd";
 import CustomField from "./CustomField";
 import { SubmitButton } from "./SubmitButton";
 import useNinValidation from "../hooks/useNinValidation";
+import { useStore } from "../store";
+import ResponseModal from "./ResponseModal";
+import useRequest from "../hooks/useRequest";
 
 const NINValidation: React.FC = () => {
   const [form] = Form.useForm();
+  const state = useStore((state) => state);
   const { onValidate } = useNinValidation();
+  const { onSetFieldRequest } = useRequest()
 
   return (
     <Form
@@ -14,8 +19,9 @@ const NINValidation: React.FC = () => {
       className="w-full mt-10 lg:max-w-lg lg:mx-auto"
       layout="vertical"
     >
+      {state.showResponseModal && <ResponseModal />}
       <Form.Item
-        name="firstName"
+        name="firstname"
         rules={[
           { required: true, message: "First name is required" },
           {
@@ -42,7 +48,7 @@ const NINValidation: React.FC = () => {
         <CustomField label="Middle Name" placeholder="Enter middle name" />
       </Form.Item>
       <Form.Item
-        name="lastName"
+        name="lastname"
         rules={[
           { required: true, message: "Last name is required" },
           {
@@ -68,22 +74,28 @@ const NINValidation: React.FC = () => {
           placeholder="Enter NIN"
           minLength={11}
           maxLength={11}
+          onChange={(e) => {
+            form.setFieldValue("nin", e.target.value)
+            onSetFieldRequest("nin", e.target.value)
+          }}
           required
         />
       </Form.Item>
       <Form.Item
-        name="dob"
+        name="dateOfBirth"
         rules={[{ required: true, message: "Date of birth is required" }]}
       >
         <CustomField
           label="Date of birth"
           type="date"
-          name="dob"
+          name="dateOfBirth"
           form={form}
           required
         />
       </Form.Item>
-      <SubmitButton form={form}>Proceed</SubmitButton>
+      <SubmitButton loading={state.loading} form={form}>
+        Proceed
+      </SubmitButton>
     </Form>
   );
 };

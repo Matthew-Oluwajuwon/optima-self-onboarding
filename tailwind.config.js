@@ -13,7 +13,8 @@ export default {
         "gray-500": "#667085"
       },
       fontFamily: {
-        "euclid-semibold": "euclid-semibold"
+        "euclid-semibold": "euclid-semibold",
+        "euclid-bold": "euclid-bold"
       }
     },
   },

@@ -11,6 +11,10 @@ export interface State {
   offenses: Array<string>;
   maritalStatus: Array<string>;
   request: any;
+  showResponseModal: boolean;
+  loading: boolean;
+  record: any;
+  showOtp: boolean;
   setAllState: (newState: State) => void;
   setState: (key: keyof State, value: any) => void;
 }
@@ -25,6 +29,10 @@ export const useStore: UseBoundStore<StoreApi<State>> = create((set) => ({
   maritalStatus: [],
   request: {},
   processing: false,
+  loading: false,
+  record: {},
+  showResponseModal: false,
+  showOtp: false,
   setAllState: (newState: State) => {
     set(() => ({ ...newState }));
   },

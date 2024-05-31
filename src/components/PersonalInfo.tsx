@@ -1,28 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Col, Divider, Form, Radio, Row } from "antd";
 import CustomField from "./CustomField";
 import useSelectOptions from "../hooks/useSelectOptions";
 import { useStore } from "../store";
 import useRequest from "../hooks/useRequest";
 import { SubmitButton } from "./SubmitButton";
+import useSubmitOnboarding from "../hooks/useSubmitOnboarding";
+import ResponseModal from "./ResponseModal";
+import OtpModal from "./OtpModal";
 
 const PersonalInfo: React.FC = () => {
   const state = useStore((state) => state);
   const [form] = Form.useForm();
+  const { onSendOtp } = useSubmitOnboarding();
   const { onSetFieldRequest } = useRequest();
-  const {
-    onGender,
-    onReligion,
-    onLga,
-    onMoneyRange,
-    onOffenses,
-    onMaritalStatus,
-  } = useSelectOptions();
+  const { onGender, onReligion, onLga, onOffenses, onMaritalStatus } =
+    useSelectOptions();
 
   return (
     <Form
       form={form}
       layout="vertical"
+      onFinish={onSendOtp}
       requiredMark="optional"
+      autoComplete="true"
       className="w-full mt-10 lg:max-w-lg lg:mx-auto"
       initialValues={{
         name: "noOfSpouse",
@@ -32,6 +33,10 @@ const PersonalInfo: React.FC = () => {
         {
           name: "noOfSpouse",
           value: state.request?.noOfSpouse ?? 1,
+        },
+        {
+          name: "annualRent",
+          value: state.request?.annualRent,
         },
         {
           name: "spouse",
@@ -44,6 +49,50 @@ const PersonalInfo: React.FC = () => {
         },
       ]}
     >
+      {state.showResponseModal && <ResponseModal />}
+      {state.showOtp && <OtpModal />}
+      <Form.Item
+        name={"phoneNumber"}
+        rules={[
+          {
+            required: true,
+            message: "Phone number is required",
+          },
+          {
+            pattern: /^0[7-9]\d{9}$/,
+            message: "Invalid phone number",
+          },
+        ]}
+      >
+        <CustomField
+          placeholder="Enter phone number"
+          label="Phone number"
+          maxLength={11}
+          onChange={(e) => onSetFieldRequest("phoneNumber", e.target.value)}
+          minLength={11}
+          required
+        />
+      </Form.Item>
+      <Form.Item
+        name={"email"}
+        rules={[
+          {
+            required: true,
+            message: "Email is required",
+          },
+          {
+            type: "email",
+            message: "Invalid email entered",
+          },
+        ]}
+      >
+        <CustomField
+          placeholder="Enter email address"
+          label="Email"
+          onChange={(e) => onSetFieldRequest("email", e.target.value)}
+          required
+        />
+      </Form.Item>
       <Form.Item
         name="gender"
         rules={[{ required: true, message: "Gender is required" }]}
@@ -53,6 +102,7 @@ const PersonalInfo: React.FC = () => {
           selectPlaceholder="Select gender"
           type="select"
           loading={state.processing}
+          onChange={(e) => onSetFieldRequest("gender", e)}
           required
           onFocus={onGender}
           options={state.genders.map((gender) => ({
@@ -62,14 +112,15 @@ const PersonalInfo: React.FC = () => {
         />
       </Form.Item>
       <Form.Item
-        name="gender"
-        rules={[{ required: true, message: "Gender is required" }]}
+        name="religion"
+        rules={[{ required: true, message: "Religion is required" }]}
       >
         <CustomField
           label="Religion"
           selectPlaceholder="Select religion"
           type="select"
           loading={state.processing}
+          onChange={(e) => onSetFieldRequest("religion", e)}
           required
           onFocus={onReligion}
           options={state.religions.map((religion) => ({
@@ -89,10 +140,33 @@ const PersonalInfo: React.FC = () => {
           loading={state.processing}
           required
           onFocus={onLga}
+          onChange={(e) => onSetFieldRequest("lga", e)}
           options={state.lga.map((lga) => ({
             label: lga,
             value: lga,
           }))}
+        />
+      </Form.Item>
+      <Form.Item
+        name="placeOfBirth"
+        rules={[{ required: true, message: "Place of birth is required" }]}
+      >
+        <CustomField
+          label="Place of birth"
+          placeholder="Enter place of birth"
+          onChange={(e) => onSetFieldRequest("placeOfBirth", e.target.value)}
+          required
+        />
+      </Form.Item>
+      <Form.Item
+        name="address"
+        rules={[{ required: true, message: "Address is required" }]}
+      >
+        <CustomField
+          label="Address"
+          onChange={(e) => onSetFieldRequest("address", e.target.value)}
+          placeholder="Enter address"
+          required
         />
       </Form.Item>
       <Form.Item
@@ -101,36 +175,42 @@ const PersonalInfo: React.FC = () => {
             Do you own your own house? <span className="text-[#FF0000]">*</span>
           </p>
         }
-        name="houseType"
-        rules={[{ required: true, message: "House type is required" }]}
+        name="houseOwner"
+        rules={[{ required: true, message: "House owner type is required" }]}
       >
         <Radio.Group
-          onChange={(e) => onSetFieldRequest("houseType", e.target.value)}
+          onChange={(e) => onSetFieldRequest("houseOwner", e.target.value)}
         >
-          <Radio value="yes" className="text-[#8B98B9]">
+          <Radio value={true} className="text-[#8B98B9]">
             Yes
           </Radio>
-          <Radio value="no" className="text-[#8B98B9]">
+          <Radio value={false} className="text-[#8B98B9]">
             No
           </Radio>
         </Radio.Group>
       </Form.Item>
-      {state.request?.houseType === "no" && (
+      {state.request?.houseOwner === false && (
         <Form.Item
-          name="moneyRange"
-          rules={[{ required: true, message: "LGA is required" }]}
+          name="annualRent"
+          rules={[
+            { required: true, message: "Annual rent is required" },
+            {
+              pattern: /^\d+$/,
+              message: "Invalid input entered",
+            },
+          ]}
         >
           <CustomField
-            label="Money range"
-            selectPlaceholder="Select money range"
-            type="select"
-            loading={state.processing}
+            label="Annual rent"
+            placeholder="Enter annual rent"
+            onChange={(e) => {
+              onSetFieldRequest(
+                "annualRent",
+                e.target.value?.replace(/1/, ",")
+              );
+            }}
+            type="text"
             required
-            onFocus={onMoneyRange}
-            options={state.moneyRange.map((moneyRange) => ({
-              label: moneyRange,
-              value: moneyRange,
-            }))}
           />
         </Form.Item>
       )}
@@ -141,31 +221,31 @@ const PersonalInfo: React.FC = () => {
             <span className="text-[#FF0000]">*</span>
           </p>
         }
-        name="arrestType"
-        rules={[{ required: true, message: "House type is required" }]}
+        name="convicted"
+        rules={[{ required: true, message: "Conviction is required" }]}
       >
         <Radio.Group
-          onChange={(e) => onSetFieldRequest("arrestType", e.target.value)}
+          onChange={(e) => onSetFieldRequest("convicted", e.target.value)}
         >
-          <Radio value="yes" className="text-[#8B98B9]">
+          <Radio value={true} className="text-[#8B98B9]">
             Yes
           </Radio>
-          <Radio value="no" className="text-[#8B98B9]">
+          <Radio value={false} className="text-[#8B98B9]">
             No
           </Radio>
         </Radio.Group>
       </Form.Item>
-      {state.request?.arrestType?.toLowerCase() === "yes" && (
+      {state.request?.convicted && (
         <Form.Item
-          name="offense"
-          rules={[{ required: true, message: "Offense is required" }]}
+          name="crimeType"
+          rules={[{ required: true, message: "Crime type is required" }]}
         >
           <CustomField
-            label="Offense"
+            label="Crime type"
             selectPlaceholder="Select offense"
             type="select"
             loading={state.processing}
-            onChange={(e) => onSetFieldRequest("offenseType", e)}
+            onChange={(e) => onSetFieldRequest("crimeType", e)}
             required
             onFocus={onOffenses}
             options={state.offenses.map((offense) => ({
@@ -175,7 +255,7 @@ const PersonalInfo: React.FC = () => {
           />
         </Form.Item>
       )}
-      {state.request?.offenseType?.toLowerCase().includes("other") && (
+      {state.request?.crimeType?.toLowerCase().includes("other") && (
         <Form.Item
           name="specificOffense"
           rules={[{ required: true, message: "Offense type is required" }]}
@@ -184,6 +264,9 @@ const PersonalInfo: React.FC = () => {
           <CustomField
             placeholder="Specify offense"
             label="Please specify..."
+            onChange={(e) =>
+              onSetFieldRequest("specificOffense", e.target.value)
+            }
             required
           />
         </Form.Item>
@@ -194,10 +277,12 @@ const PersonalInfo: React.FC = () => {
             Political view <span className="text-[#FF0000]">*</span>
           </p>
         }
-        name="houseType"
-        rules={[{ required: true, message: "House type is required" }]}
+        name="politicalView"
+        rules={[{ required: true, message: "Political view is required" }]}
       >
-        <Radio.Group>
+        <Radio.Group
+          onChange={(e) => onSetFieldRequest("politicalView", e.target.value)}
+        >
           <Radio value="Active" className="text-[#8B98B9]">
             Active
           </Radio>
@@ -298,7 +383,9 @@ const PersonalInfo: React.FC = () => {
           </Form.List>
         </>
       )}
-      <SubmitButton form={form}>Submit</SubmitButton>
+      <SubmitButton loading={state.loading} form={form}>
+        Submit
+      </SubmitButton>
     </Form>
   );
 };

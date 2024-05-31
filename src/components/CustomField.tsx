@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DatePicker, Select } from "antd";
+import { DatePicker, Input, Select } from "antd";
 import { InputHTMLAttributes } from "react";
 import { LoadingOutlined, CaretDownOutlined } from "@ant-design/icons";
 
 export interface CustomField extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   required?: boolean;
-  type?: "email" | "text" | "secure" | "date" | "select" | "number";
+  type?: "email" | "text" | "secure" | "date" | "select" | "number"
   name?: string;
   form?: any;
   selectPlaceholder?: string;
@@ -25,6 +25,7 @@ const CustomField: React.FC<CustomField> = ({
   loading,
   ...props
 }) => {
+
   return (
     <div className="border border-[#DCE1EA] p-4 rounded-[4px] relative mt-5">
       <label
@@ -37,6 +38,7 @@ const CustomField: React.FC<CustomField> = ({
       {type === "date" ? (
         <DatePicker
           className="w-full -my-2 placeholder:text-[#8B98B9] text-[#8B98B9] !border-none"
+          format="DD/MM/YYYY"
           placeholder="Select DOB"
           onChange={(_date, dateString) =>
             form?.setFieldsValue({ [name as string]: dateString })
@@ -61,7 +63,14 @@ const CustomField: React.FC<CustomField> = ({
           options={options}
         />
       ) : (
-        <input type={type} className="w-full text-[#8B98B9]" {...props} />
+        <Input
+          type={type}
+          className="w-full text-[#8B98B9] -my-2"
+          placeholder={props.placeholder}
+          onChange={props.onChange}
+          maxLength={props.maxLength}
+          minLength={props.minLength}
+        />
       )}
     </div>
   );

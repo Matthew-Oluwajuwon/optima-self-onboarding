@@ -40,3 +40,9 @@ input {
     outline: none;
     border: none;
 }
+
+.ant-otp-input {
+  width: 3.5rem!important;
+  height: 5rem!important;
+  font-size: 1.5rem;
+}

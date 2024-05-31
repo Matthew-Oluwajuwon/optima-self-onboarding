@@ -18,5 +18,13 @@ export const customTheme: ThemeConfig = {
       lineWidth: 0,
       colorText: "#8B98B9"
     },
+    Button: {
+      dangerColor: "#fff",
+      colorErrorBg: "blue"
+    },
+    Input: {
+      controlOutlineWidth: 0,
+      lineWidth: 0,
+    }
   },
 };

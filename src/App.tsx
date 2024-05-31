@@ -5,7 +5,7 @@ import StepForm from "./components/StepForm";
 import { customTheme } from "./theme.config";
 
 const App = () => {
-  document.title = "Self Onboarding | Kwara State Government";
+  document.title = "Self Onboarding | Optima";
 
   return (
     <ConfigProvider theme={customTheme}>

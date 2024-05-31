@@ -7,7 +7,6 @@ const useRequest = () => {
 
   const onSetFieldRequest = useCallback(
     (fieldName: string, fieldValue: any) => {
-      console.log(fieldValue)
       if (fieldName === "noOfSpouse") {
         state.setAllState({
           ...state,

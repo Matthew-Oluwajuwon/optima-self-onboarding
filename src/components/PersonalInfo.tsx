@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, Col, Divider, Form, Radio, Row } from "antd";
 import CustomField from "./CustomField";
@@ -8,7 +9,7 @@ import { SubmitButton } from "./SubmitButton";
 import useSubmitOnboarding from "../hooks/useSubmitOnboarding";
 import ResponseModal from "./ResponseModal";
 import OtpModal from "./OtpModal";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const PersonalInfo: React.FC = () => {
   const state = useStore((state) => state);
@@ -21,26 +22,49 @@ const PersonalInfo: React.FC = () => {
   // Local state to manage checkboxes in the Form List
   const [checkboxStates, setCheckboxStates] = useState<any>({});
 
-  const handleCheckboxChange = (
-    index: number,
-    key: string,
-    value: string | boolean | number
-  ) => {
-    setCheckboxStates({
-      ...checkboxStates,
-      [index]: value,
-    });
-    // Optionally, update your global state if necessary
-    const updatedChildList = [...(state.request?.childList || [])];
-    updatedChildList[index] = { ...updatedChildList[index], [key]: value };
-    onSetFieldRequest("childList", updatedChildList);
-  };
+  const handleCheckboxChange = useCallback(
+    (index: number, key: string, value: string | boolean | number) => {
+      setCheckboxStates({
+        ...checkboxStates,
+        [index]: value,
+      });
+      // Optionally, update your global state if necessary
+      const updatedChildList = [...(state.request?.childList || [])];
+      updatedChildList[index] = { ...updatedChildList[index], [key]: value };
+      form.setFieldValue("childList", updatedChildList);
+      onSetFieldRequest("childList", updatedChildList);
+    },
+    [checkboxStates, form, onSetFieldRequest, state.request?.childList]
+  );
 
-  const onChangeFormList = (index: number, key: string, value: string | number) => {
-    const updatedSpouseList = [...(state.request?.spouseList || [])];
-    updatedSpouseList[index] = { ...updatedSpouseList[index], [key]: value };
-    onSetFieldRequest("spouseList", updatedSpouseList);
-  };
+  const [spouseCount, setSpouseCount] = useState(1);
+
+
+  const onChangeFormList = useCallback(
+    (index: number, key: string, value: string | number) => {
+      const updatedSpouseList = [...(state.request?.spouseList || [])];
+      updatedSpouseList[index] = { ...updatedSpouseList[index], [key]: value };
+      form.setFieldValue("spouseList", updatedSpouseList);
+      onSetFieldRequest("spouseList", updatedSpouseList);
+    },
+    [form, onSetFieldRequest, state.request?.spouseList]
+  );
+
+  useEffect(() => {
+    form.setFieldsValue({
+      noOfSpouse: 1,
+      spouseList: Array(1).fill({}),
+      childList: Array(1).fill({}),
+    });
+    onSetFieldRequest("noOfSpouse", 1);
+  }, [form]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      spouseList: Array(spouseCount).fill({}),
+      childList: Array(spouseCount).fill({}),
+    });
+  }, [spouseCount, form]);
 
   return (
     <Form
@@ -50,34 +74,7 @@ const PersonalInfo: React.FC = () => {
       requiredMark="optional"
       autoComplete="true"
       className="w-full mt-10 lg:max-w-lg lg:mx-auto"
-      fields={[
-        {
-          name: "noOfSpouse",
-          value: state.request?.noOfSpouse ?? 1,
-        },
-        {
-          name: "annualRent",
-          value: state.request?.annualRent,
-        },
-        {
-          name: "spouseList",
-          value: state.request?.noOfSpouse
-            ? Array.from(
-                { length: Number(state.request?.noOfSpouse) },
-                () => ({})
-              )
-            : [0],
-        },
-        {
-          name: "childList",
-          value: state.request?.noOfSpouse
-            ? Array.from(
-                { length: Number(state.request?.noOfSpouse) },
-                () => ({})
-              )
-            : [0],
-        },
-      ]}
+      initialValues={{noOfSpouse: spouseCount}}
     >
       {state.showResponseModal && <ResponseModal />}
       {state.showOtp && <OtpModal />}
@@ -345,6 +342,7 @@ const PersonalInfo: React.FC = () => {
         <>
           <Form.Item
             name="noOfSpouse"
+            initialValue={spouseCount}
             rules={[
               {
                 validator(_rule, value) {
@@ -359,18 +357,22 @@ const PersonalInfo: React.FC = () => {
               },
               {
                 pattern: /^\d+$/,
-                message: "Only numbers are allowed"
-              }
+                message: "Only numbers are allowed",
+              },
             ]}
           >
             <CustomField
               placeholder="Enter number of spouse"
               label="No of spouse"
-              onChange={(e) => onSetFieldRequest("noOfSpouse", e.target.value)}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 1;
+                onSetFieldRequest("noOfSpouse", value);
+                setSpouseCount(value);
+              }}
               required
             />
           </Form.Item>
-          <Divider dashed>SPOUSE INFORMATION</Divider>
+          <Divider dashed>SPOUSE(S) INFORMATION</Divider>
           <Form.List name="spouseList">
             {(fields) => (
               <>
@@ -430,7 +432,7 @@ const PersonalInfo: React.FC = () => {
               </>
             )}
           </Form.List>
-          <Divider dashed>CHILD INFORMATION</Divider>
+          <Divider dashed>CHILD(REN) INFORMATION</Divider>
           <Form.List name="childList">
             {(fields) => (
               <>
@@ -439,7 +441,12 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, "inSchool"]}
-                      rules={[{ required: true, message: "Missing child school status" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Missing child school status",
+                        },
+                      ]}
                       className="w-full"
                     >
                       <>
@@ -453,6 +460,7 @@ const PersonalInfo: React.FC = () => {
                             )
                           }
                           checked={checkboxStates[index]}
+                          value={checkboxStates[index]}
                           className="ml-2"
                         />
                       </>
@@ -523,7 +531,11 @@ const PersonalInfo: React.FC = () => {
                           placeholder="Enter child age"
                           label="Child age"
                           onChange={(e) =>
-                            handleCheckboxChange(index, "age", Number(e.target.value))
+                            handleCheckboxChange(
+                              index,
+                              "age",
+                              Number(e.target.value)
+                            )
                           }
                           required
                         />

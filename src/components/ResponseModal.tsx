@@ -7,26 +7,28 @@ import success from "../assets/images/success.svg";
 const ResponseModal: React.FC = () => {
   const { showResponseModal, record, current, setState, setAllState } =
     useStore((state) => state);
-  const handleCancel = useCallback(() => {
+  const handleClick = useCallback(() => {
     if (record?.responseCode === 200) {
       setState("current", current === 1 ? 0 : 1);
-      setAllState({
-        current: 0,
-        genders: [],
-        religions: [],
-        processing: false,
-        lga: [],
-        moneyRange: [],
-        offenses: [],
-        maritalStatus: [],
-        request: undefined,
-        showResponseModal: false,
-        loading: false,
-        record: undefined,
-        showOtp: false,
-        setAllState: () => {},
-        setState: () => {},
-      });
+      if (current === 1) {
+        setAllState({
+          current: 0,
+          genders: [],
+          religions: [],
+          processing: false,
+          lga: [],
+          moneyRange: [],
+          offenses: [],
+          maritalStatus: [],
+          request: undefined,
+          showResponseModal: false,
+          loading: false,
+          record: undefined,
+          showOtp: false,
+          setAllState: () => {},
+          setState: () => {},
+        });
+      }
     }
     setState("showResponseModal", false);
   }, [current, record?.responseCode, setAllState, setState]);
@@ -36,7 +38,7 @@ const ResponseModal: React.FC = () => {
       open={showResponseModal}
       footer={false}
       centered
-      onCancel={handleCancel}
+      onCancel={handleClick}
       closable={false}
     >
       <div className="grid place-content-center m-5">
@@ -59,7 +61,7 @@ const ResponseModal: React.FC = () => {
           type="primary"
           className="py-6 flex items-center justify-center shadow-none"
           block
-          onClick={handleCancel}
+          onClick={handleClick}
           style={{
             backgroundColor: record?.responseCode === 200 ? "#109856" : "red",
           }}

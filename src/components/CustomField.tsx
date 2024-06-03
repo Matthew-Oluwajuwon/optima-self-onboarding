@@ -70,6 +70,7 @@ const CustomField: React.FC<CustomField> = ({
           onChange={props.onChange}
           maxLength={props.maxLength}
           minLength={props.minLength}
+          value={props.value}
         />
       )}
     </div>

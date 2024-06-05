@@ -39,7 +39,6 @@ const PersonalInfo: React.FC = () => {
 
   const [spouseCount, setSpouseCount] = useState(1);
 
-
   const onChangeFormList = useCallback(
     (index: number, key: string, value: string | number) => {
       const updatedSpouseList = [...(state.request?.spouseList || [])];
@@ -74,7 +73,7 @@ const PersonalInfo: React.FC = () => {
       requiredMark="optional"
       autoComplete="true"
       className="w-full mt-10 lg:max-w-lg lg:mx-auto"
-      initialValues={{noOfSpouse: spouseCount}}
+      initialValues={{ noOfSpouse: spouseCount }}
     >
       {state.showResponseModal && <ResponseModal />}
       {state.showOtp && <OtpModal />}
@@ -105,17 +104,17 @@ const PersonalInfo: React.FC = () => {
         rules={[
           {
             required: true,
-            message: "Email is required",
+            message: "Email address is required",
           },
           {
             type: "email",
-            message: "Invalid email entered",
+            message: "Invalid email address entered",
           },
         ]}
       >
         <CustomField
           placeholder="Enter email address"
-          label="Email"
+          label="Email address"
           onChange={(e) => onSetFieldRequest("email", e.target.value)}
           required
         />
@@ -176,7 +175,13 @@ const PersonalInfo: React.FC = () => {
       </Form.Item>
       <Form.Item
         name="placeOfBirth"
-        rules={[{ required: true, message: "Place of birth is required" }]}
+        rules={[
+          { required: true, message: "Place of birth is required" },
+          {
+            pattern: /^[a-zA-Z\s]*$/,
+            message: "Invalid input",
+          },
+        ]}
       >
         <CustomField
           label="Place of birth"
@@ -187,7 +192,12 @@ const PersonalInfo: React.FC = () => {
       </Form.Item>
       <Form.Item
         name="address"
-        rules={[{ required: true, message: "Address is required" }]}
+        rules={[{ required: true, message: "Address is required" },
+          {
+            pattern: /^[a-zA-Z0-9,.\s]*$/,
+            message: "Invalid input"
+          }
+        ]}
       >
         <CustomField
           label="Address"
@@ -287,6 +297,10 @@ const PersonalInfo: React.FC = () => {
           name="specifyCrimeType"
           rules={[
             { required: true, message: "Specific crime type is required" },
+            {
+              pattern: /^[a-zA-Z\s]*$/,
+              message: "Invalid input",
+            },
           ]}
           className="w-full"
         >
@@ -384,6 +398,10 @@ const PersonalInfo: React.FC = () => {
                         name={[name, "name"]}
                         rules={[
                           { required: true, message: "Missing spouse name" },
+                          {
+                            pattern: /^[a-zA-Z\s]*$/,
+                            message: "Invalid spouse name",
+                          },
                         ]}
                         className="w-full"
                       >
@@ -471,6 +489,10 @@ const PersonalInfo: React.FC = () => {
                         name={[name, "name"]}
                         rules={[
                           { required: true, message: "Missing child name" },
+                          {
+                            pattern: /^[a-zA-Z\s]*$/,
+                            message: "Invalid child name",
+                          },
                         ]}
                         className="w-full"
                       >
@@ -551,6 +573,10 @@ const PersonalInfo: React.FC = () => {
                               {
                                 required: true,
                                 message: "Missing school name",
+                              },
+                              {
+                                pattern: /^[a-zA-Z0-9\s]*$/,
+                                message: "Invalid school name",
                               },
                             ]}
                             className="w-full"

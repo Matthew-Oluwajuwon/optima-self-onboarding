@@ -1,20 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DatePicker, Input, Select } from "antd";
+import { DatePicker, Input, InputNumber, Select } from "antd";
 import { InputHTMLAttributes } from "react";
 import { LoadingOutlined, CaretDownOutlined } from "@ant-design/icons";
+import useRequest from "../hooks/useRequest";
+import React from "react";
 
 export interface CustomField extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   required?: boolean;
-  type?: "email" | "text" | "secure" | "date" | "select" | "number"
+  type?: "email" | "text" | "secure" | "date" | "select" | "number" | "amount";
   name?: string;
   form?: any;
   selectPlaceholder?: string;
   options?: Array<any>;
   loading?: boolean;
+  onChange?: any;
 }
 
-const CustomField: React.FC<CustomField> = ({
+const CustomFields: React.FC<CustomField> = ({
   label,
   required = false,
   type = "text",
@@ -23,9 +26,10 @@ const CustomField: React.FC<CustomField> = ({
   selectPlaceholder,
   options,
   loading,
+  onChange,
   ...props
 }) => {
-
+  const { onSetFieldRequest } = useRequest()
   return (
     <div className="border border-[#DCE1EA] p-4 rounded-[4px] relative mt-5">
       <label
@@ -49,7 +53,7 @@ const CustomField: React.FC<CustomField> = ({
           placeholder={selectPlaceholder}
           allowClear
           showSearch
-          onChange={props.onChange}
+          onChange={onChange}
           suffixIcon={
             loading ? (
               <LoadingOutlined className="text-[#109856]" spin={loading} />
@@ -62,12 +66,21 @@ const CustomField: React.FC<CustomField> = ({
           onFocus={props.onFocus}
           options={options}
         />
+      ) : type === "amount" ? (
+        <InputNumber<number>
+        formatter={(value) => `₦ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        // parser={(value) => value?.replace(/₦\s?|(,*)/g, '') as unknown as number}
+          controls={false}
+          className="w-full text-[#8B98B9] -my-2"
+          placeholder={props.placeholder}
+          onChange={(value) => onSetFieldRequest("annualRent", value)}
+        />
       ) : (
         <Input
           type={type}
           className="w-full text-[#8B98B9] -my-2"
           placeholder={props.placeholder}
-          onChange={props.onChange}
+          onChange={onChange}
           maxLength={props.maxLength}
           minLength={props.minLength}
           value={props.value}
@@ -77,4 +90,4 @@ const CustomField: React.FC<CustomField> = ({
   );
 };
 
-export default CustomField;
+export const CustomField = React.memo(CustomFields);

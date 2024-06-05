@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, Col, Divider, Form, Radio, Row } from "antd";
-import CustomField from "./CustomField";
+import { CustomField } from "./CustomField";
 import useSelectOptions from "../hooks/useSelectOptions";
 import { useStore } from "../store";
 import useRequest from "../hooks/useRequest";
@@ -94,7 +94,9 @@ const PersonalInfo: React.FC = () => {
           placeholder="Enter phone number"
           label="Phone number"
           maxLength={11}
-          onChange={(e) => onSetFieldRequest("phoneNumber", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest("phoneNumber", e.target.value)
+          }
           minLength={11}
           required
         />
@@ -115,7 +117,7 @@ const PersonalInfo: React.FC = () => {
         <CustomField
           placeholder="Enter email address"
           label="Email address"
-          onChange={(e) => onSetFieldRequest("email", e.target.value)}
+          onChange={(e: any) => onSetFieldRequest("email", e.target.value)}
           required
         />
       </Form.Item>
@@ -128,7 +130,7 @@ const PersonalInfo: React.FC = () => {
           selectPlaceholder="Select gender"
           type="select"
           loading={state.processing}
-          onChange={(e) => onSetFieldRequest("gender", e)}
+          onChange={(e: any) => onSetFieldRequest("gender", e)}
           required
           onFocus={onGender}
           options={state.genders.map((gender) => ({
@@ -146,7 +148,7 @@ const PersonalInfo: React.FC = () => {
           selectPlaceholder="Select religion"
           type="select"
           loading={state.processing}
-          onChange={(e) => onSetFieldRequest("religion", e)}
+          onChange={(e: any) => onSetFieldRequest("religion", e)}
           required
           onFocus={onReligion}
           options={state.religions.map((religion) => ({
@@ -166,7 +168,7 @@ const PersonalInfo: React.FC = () => {
           loading={state.processing}
           required
           onFocus={onLga}
-          onChange={(e) => onSetFieldRequest("lga", e)}
+          onChange={(e: any) => onSetFieldRequest("lga", e)}
           options={state.lga.map((lga) => ({
             label: lga,
             value: lga,
@@ -178,7 +180,7 @@ const PersonalInfo: React.FC = () => {
         rules={[
           { required: true, message: "Place of birth is required" },
           {
-            pattern: /^[a-zA-Z\s]*$/,
+            pattern: /^[a-zA-Z.,\s]*$/,
             message: "Invalid input",
           },
         ]}
@@ -186,22 +188,25 @@ const PersonalInfo: React.FC = () => {
         <CustomField
           label="Place of birth"
           placeholder="Enter place of birth"
-          onChange={(e) => onSetFieldRequest("placeOfBirth", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest("placeOfBirth", e.target.value)
+          }
           required
         />
       </Form.Item>
       <Form.Item
         name="address"
-        rules={[{ required: true, message: "Address is required" },
+        rules={[
+          { required: true, message: "Address is required" },
           {
             pattern: /^[a-zA-Z0-9,.\s]*$/,
-            message: "Invalid input"
-          }
+            message: "Invalid input",
+          },
         ]}
       >
         <CustomField
           label="Address"
-          onChange={(e) => onSetFieldRequest("address", e.target.value)}
+          onChange={(e: any) => onSetFieldRequest("address", e.target.value)}
           placeholder="Enter address"
           required
         />
@@ -216,7 +221,7 @@ const PersonalInfo: React.FC = () => {
         rules={[{ required: true, message: "House owner type is required" }]}
       >
         <Radio.Group
-          onChange={(e) => onSetFieldRequest("houseOwner", e.target.value)}
+          onChange={(e: any) => onSetFieldRequest("houseOwner", e.target.value)}
         >
           <Radio value={true} className="text-[#8B98B9]">
             Yes
@@ -232,21 +237,16 @@ const PersonalInfo: React.FC = () => {
           rules={[
             { required: true, message: "Annual rent is required" },
             {
-              pattern: /^\d+$/,
-              message: "Invalid input entered",
-            },
+              pattern: /^-?\d+$/,
+              message: "Invalid input"
+            }
           ]}
         >
           <CustomField
             label="Annual rent"
             placeholder="Enter annual rent"
-            onChange={(e) => {
-              onSetFieldRequest(
-                "annualRent",
-                e.target.value?.replace(/1/, ",")
-              );
-            }}
-            type="text"
+            type="amount"
+            value={state.request?.annualRent}
             required
           />
         </Form.Item>
@@ -262,7 +262,7 @@ const PersonalInfo: React.FC = () => {
         rules={[{ required: true, message: "Conviction is required" }]}
       >
         <Radio.Group
-          onChange={(e) => onSetFieldRequest("convicted", e.target.value)}
+          onChange={(e: any) => onSetFieldRequest("convicted", e.target.value)}
         >
           <Radio value={true} className="text-[#8B98B9]">
             Yes
@@ -282,7 +282,7 @@ const PersonalInfo: React.FC = () => {
             selectPlaceholder="Select offense"
             type="select"
             loading={state.processing}
-            onChange={(e) => onSetFieldRequest("crimeType", e)}
+            onChange={(e: any) => onSetFieldRequest("crimeType", e)}
             required
             onFocus={onOffenses}
             options={state.offenses.map((offense) => ({
@@ -307,7 +307,7 @@ const PersonalInfo: React.FC = () => {
           <CustomField
             placeholder="Specify offense"
             label="Please specify..."
-            onChange={(e) =>
+            onChange={(e: any) =>
               onSetFieldRequest("specifyCrimeType", e.target.value)
             }
             required
@@ -324,7 +324,9 @@ const PersonalInfo: React.FC = () => {
         rules={[{ required: true, message: "Political view is required" }]}
       >
         <Radio.Group
-          onChange={(e) => onSetFieldRequest("politicalView", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest("politicalView", e.target.value)
+          }
         >
           <Radio value="Active" className="text-[#8B98B9]">
             Active
@@ -344,7 +346,7 @@ const PersonalInfo: React.FC = () => {
           type="select"
           loading={state.processing}
           required
-          onChange={(e) => onSetFieldRequest("maritalStatus", e)}
+          onChange={(e: any) => onSetFieldRequest("maritalStatus", e)}
           onFocus={onMaritalStatus}
           options={state.maritalStatus.map((maritalStatus) => ({
             label: maritalStatus,
@@ -378,7 +380,7 @@ const PersonalInfo: React.FC = () => {
             <CustomField
               placeholder="Enter number of spouse"
               label="No of spouse"
-              onChange={(e) => {
+              onChange={(e: any) => {
                 const value = parseInt(e.target.value) || 1;
                 onSetFieldRequest("noOfSpouse", value);
                 setSpouseCount(value);
@@ -408,7 +410,7 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter spouse name"
                           label="Spouse name"
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             onChangeFormList(index, "name", e.target.value)
                           }
                           required
@@ -434,7 +436,7 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter spouse phone number"
                           label="Spouse phone number"
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             onChangeFormList(
                               index,
                               "phoneNumber",
@@ -470,7 +472,7 @@ const PersonalInfo: React.FC = () => {
                       <>
                         Is this child in school?{" "}
                         <Checkbox
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             handleCheckboxChange(
                               index,
                               "inSchool",
@@ -499,7 +501,7 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter child name"
                           label="Child name"
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             handleCheckboxChange(index, "name", e.target.value)
                           }
                           required
@@ -525,7 +527,7 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter child phone number"
                           label="Child phone number"
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             handleCheckboxChange(
                               index,
                               "phoneNumber",
@@ -552,7 +554,7 @@ const PersonalInfo: React.FC = () => {
                         <CustomField
                           placeholder="Enter child age"
                           label="Child age"
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             handleCheckboxChange(
                               index,
                               "age",
@@ -584,7 +586,7 @@ const PersonalInfo: React.FC = () => {
                             <CustomField
                               placeholder="Enter school name"
                               label="School name"
-                              onChange={(e) =>
+                              onChange={(e: any) =>
                                 handleCheckboxChange(
                                   index,
                                   "schoolName",

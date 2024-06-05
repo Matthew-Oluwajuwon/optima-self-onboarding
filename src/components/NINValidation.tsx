@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form } from "antd";
-import CustomField from "./CustomField";
+import { CustomField } from "./CustomField";
 import { SubmitButton } from "./SubmitButton";
 import useNinValidation from "../hooks/useNinValidation";
 import { useStore } from "../store";
@@ -10,7 +11,7 @@ const NINValidation: React.FC = () => {
   const [form] = Form.useForm();
   const state = useStore((state) => state);
   const { onValidate } = useNinValidation();
-  const { onSetFieldRequest } = useRequest()
+  const { onSetFieldRequest } = useRequest();
 
   return (
     <Form
@@ -74,9 +75,9 @@ const NINValidation: React.FC = () => {
           placeholder="Enter NIN"
           minLength={11}
           maxLength={11}
-          onChange={(e) => {
-            form.setFieldValue("nin", e.target.value)
-            onSetFieldRequest("nin", e.target.value)
+          onChange={(e: any) => {
+            form.setFieldValue("nin", e.target.value);
+            onSetFieldRequest("nin", e.target.value);
           }}
           required
         />

@@ -2,7 +2,6 @@
 import { DatePicker, Input, InputNumber, Select } from "antd";
 import { InputHTMLAttributes } from "react";
 import { LoadingOutlined, CaretDownOutlined } from "@ant-design/icons";
-import useRequest from "../hooks/useRequest";
 import React from "react";
 
 export interface CustomField extends InputHTMLAttributes<HTMLInputElement> {
@@ -29,7 +28,7 @@ const CustomFields: React.FC<CustomField> = ({
   onChange,
   ...props
 }) => {
-  const { onSetFieldRequest } = useRequest()
+
   return (
     <div className="border border-[#DCE1EA] p-4 rounded-[4px] relative mt-5">
       <label
@@ -73,7 +72,7 @@ const CustomFields: React.FC<CustomField> = ({
           controls={false}
           className="w-full text-[#8B98B9] -my-2"
           placeholder={props.placeholder}
-          onChange={(value) => onSetFieldRequest("annualRent", value)}
+          onChange={onChange}
         />
       ) : (
         <Input

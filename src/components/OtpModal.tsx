@@ -37,7 +37,7 @@ const OtpModal: React.FC = () => {
               OTP Verification
             </h1>
             <h3 className="my-5 text-center">
-              Kindly entere the OTP delivered to{" "}
+              Kindly enter the OTP delivered to{" "}
               <strong>{request?.phoneNumber}</strong>
             </h3>
             <Input.OTP
@@ -48,7 +48,7 @@ const OtpModal: React.FC = () => {
             />
           </div>
           <div className="text-center">
-            Didn't receive an otp?{" "}
+            Didn't receive an OTP?{" "}
             <button
               type="button"
               className="text-[#109856] font-euclid-semibold"

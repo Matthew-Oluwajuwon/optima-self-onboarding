@@ -18,61 +18,50 @@ const PersonalInfo: React.FC = () => {
   const { onSetFieldRequest } = useRequest();
   const { onGender, onReligion, onLga, onOffenses, onMaritalStatus } =
     useSelectOptions();
-
-  // Local state to manage checkboxes in the Form List
-  const [checkboxStates, setCheckboxStates] = useState<any>({});
-
-  const handleCheckboxChange = useCallback(
-    (index: number, key: string, value: string | boolean | number) => {
-      setCheckboxStates({
-        ...checkboxStates,
-        [index]: value,
-      });
-      // Optionally, update your global state if necessary
-      const updatedChildList = [...(state.request?.childList || [])];
-      if (typeof value === "boolean") {
-        updatedChildList[index] = { ...updatedChildList[index], inSchool: value };
-        
-      } else {
-        updatedChildList[index] = { ...updatedChildList[index], [key]: value };
-        
-      }
-      form.setFieldValue("childList", updatedChildList);
-      onSetFieldRequest("childList", updatedChildList);
-    },
-    [form, onSetFieldRequest]
-  );
-
   const [spouseCount, setSpouseCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
 
+  const handleCheckboxChange = useCallback(
+    (index: number, key: string, value: string | boolean | number) => {
+      const updatedChildList = [...(form.getFieldValue("childList") || [])];
+      if (typeof value === "boolean") {
+        updatedChildList[index] = {
+          ...updatedChildList[index],
+          inSchool: value,
+        };
+      } else {
+        updatedChildList[index] = { ...updatedChildList[index], [key]: value };
+      }
+      form.setFieldsValue({ childList: updatedChildList });
+      onSetFieldRequest(state, "childList", updatedChildList);
+    },
+    [form, onSetFieldRequest, state]
+  );
+
   const onChangeFormList = useCallback(
     (index: number, key: string, value: string | number) => {
-      const updatedSpouseList = [...(state.request?.spouseList || [])];
+      const updatedSpouseList = [...(form.getFieldValue("spouseList") || [])];
       updatedSpouseList[index] = { ...updatedSpouseList[index], [key]: value };
-      form.setFieldValue("spouseList", updatedSpouseList);
-      onSetFieldRequest("spouseList", updatedSpouseList);
+      form.setFieldsValue({ spouseList: updatedSpouseList });
+      onSetFieldRequest(state, "spouseList", updatedSpouseList);
     },
-    [form, onSetFieldRequest, state.request?.spouseList]
+    [form, onSetFieldRequest, state]
   );
 
   useEffect(() => {
+    const initialSpouseList = Array(spouseCount).fill({});
+    const initialChildList = Array(childCount).fill({});
     form.setFieldsValue({
-      noOfSpouse: 1,
-      noOfChild: 0,
-      spouseList: Array(1).fill({}),
-      childList: Array(1).fill({}),
+      noOfSpouse: spouseCount,
+      spouseList: initialSpouseList,
+      noOfChild: childCount,
+      childList: initialChildList,
     });
-    onSetFieldRequest("noOfSpouse", 1);
-    onSetFieldRequest("noOfChild", 0);
-  }, [form]);
-
-  useEffect(() => {
-    form.setFieldsValue({
-      spouseList: Array(spouseCount).fill({}),
-      childList: Array(childCount).fill({}),
-    });
-  }, [spouseCount, childCount, form]);
+    onSetFieldRequest(state, "noOfSpouse", spouseCount);
+    onSetFieldRequest(state, "spouseList", initialSpouseList);
+    onSetFieldRequest(state, "noOfChild", childCount);
+    onSetFieldRequest(state, "childList", initialChildList);
+  }, [form, spouseCount, childCount, onSetFieldRequest]);
 
   return (
     <Form
@@ -104,7 +93,7 @@ const PersonalInfo: React.FC = () => {
           label="Phone number"
           maxLength={11}
           onChange={(e: any) =>
-            onSetFieldRequest("phoneNumber", e.target.value)
+            onSetFieldRequest(state, "phoneNumber", e.target.value)
           }
           minLength={11}
           required
@@ -126,7 +115,9 @@ const PersonalInfo: React.FC = () => {
         <CustomField
           placeholder="Enter email address"
           label="Email address"
-          onChange={(e: any) => onSetFieldRequest("email", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest(state, "email", e.target.value)
+          }
           required
         />
       </Form.Item>
@@ -139,7 +130,7 @@ const PersonalInfo: React.FC = () => {
           selectPlaceholder="Select gender"
           type="select"
           loading={state.processing}
-          onChange={(e: any) => onSetFieldRequest("gender", e)}
+          onChange={(e: any) => onSetFieldRequest(state, "gender", e)}
           required
           onFocus={onGender}
           options={state.genders.map((gender) => ({
@@ -157,7 +148,7 @@ const PersonalInfo: React.FC = () => {
           selectPlaceholder="Select religion"
           type="select"
           loading={state.processing}
-          onChange={(e: any) => onSetFieldRequest("religion", e)}
+          onChange={(e: any) => onSetFieldRequest(state, "religion", e)}
           required
           onFocus={onReligion}
           options={state.religions.map((religion) => ({
@@ -177,7 +168,7 @@ const PersonalInfo: React.FC = () => {
           loading={state.processing}
           required
           onFocus={onLga}
-          onChange={(e: any) => onSetFieldRequest("lga", e)}
+          onChange={(e: any) => onSetFieldRequest(state, "lga", e)}
           options={state.lga.map((lga) => ({
             label: lga,
             value: lga,
@@ -198,7 +189,7 @@ const PersonalInfo: React.FC = () => {
           label="Place of birth"
           placeholder="Enter place of birth"
           onChange={(e: any) =>
-            onSetFieldRequest("placeOfBirth", e.target.value)
+            onSetFieldRequest(state, "placeOfBirth", e.target.value)
           }
           required
         />
@@ -215,7 +206,9 @@ const PersonalInfo: React.FC = () => {
       >
         <CustomField
           label="Address"
-          onChange={(e: any) => onSetFieldRequest("address", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest(state, "address", e.target.value)
+          }
           placeholder="Enter address"
           required
         />
@@ -230,7 +223,9 @@ const PersonalInfo: React.FC = () => {
         rules={[{ required: true, message: "House owner type is required" }]}
       >
         <Radio.Group
-          onChange={(e: any) => onSetFieldRequest("houseOwner", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest(state, "houseOwner", e.target.value)
+          }
         >
           <Radio value={true} className="text-[#8B98B9]">
             Yes
@@ -255,7 +250,9 @@ const PersonalInfo: React.FC = () => {
             label="Annual rent"
             placeholder="Enter annual rent"
             type="amount"
-            onChange={(value: any) => onSetFieldRequest("annualRent", value)}
+            onChange={(value: any) =>
+              onSetFieldRequest(state, "annualRent", value)
+            }
             // value={state.request?.annualRent}
             required
           />
@@ -272,7 +269,9 @@ const PersonalInfo: React.FC = () => {
         rules={[{ required: true, message: "Conviction is required" }]}
       >
         <Radio.Group
-          onChange={(e: any) => onSetFieldRequest("convicted", e.target.value)}
+          onChange={(e: any) =>
+            onSetFieldRequest(state, "convicted", e.target.value)
+          }
         >
           <Radio value={true} className="text-[#8B98B9]">
             Yes
@@ -292,7 +291,7 @@ const PersonalInfo: React.FC = () => {
             selectPlaceholder="Select offense"
             type="select"
             loading={state.processing}
-            onChange={(e: any) => onSetFieldRequest("crimeType", e)}
+            onChange={(e: any) => onSetFieldRequest(state, "crimeType", e)}
             required
             onFocus={onOffenses}
             options={state.offenses.map((offense) => ({
@@ -318,7 +317,7 @@ const PersonalInfo: React.FC = () => {
             placeholder="Specify offense"
             label="Please specify..."
             onChange={(e: any) =>
-              onSetFieldRequest("specifyCrimeType", e.target.value)
+              onSetFieldRequest(state, "specifyCrimeType", e.target.value)
             }
             required
           />
@@ -335,7 +334,7 @@ const PersonalInfo: React.FC = () => {
       >
         <Radio.Group
           onChange={(e: any) =>
-            onSetFieldRequest("politicalView", e.target.value)
+            onSetFieldRequest(state, "politicalView", e.target.value)
           }
         >
           <Radio value="Active" className="text-[#8B98B9]">
@@ -356,7 +355,7 @@ const PersonalInfo: React.FC = () => {
           type="select"
           loading={state.processing}
           required
-          onChange={(e: any) => onSetFieldRequest("maritalStatus", e)}
+          onChange={(e: any) => onSetFieldRequest(state, "maritalStatus", e)}
           onFocus={onMaritalStatus}
           options={state.maritalStatus.map((maritalStatus) => ({
             label: maritalStatus,
@@ -364,12 +363,11 @@ const PersonalInfo: React.FC = () => {
           }))}
         />
       </Form.Item>
-      
+
       {state.request?.maritalStatus?.toLowerCase() === "married" && (
         <>
           <Form.Item
             name="noOfSpouse"
-            initialValue={spouseCount}
             rules={[
               {
                 validator(_rule, value) {
@@ -392,9 +390,16 @@ const PersonalInfo: React.FC = () => {
               placeholder="Enter number of spouse"
               label="No of spouse"
               onChange={(e: any) => {
-                const value = parseInt(e.target.value) || 1;
-                onSetFieldRequest("noOfSpouse", value);
-                setSpouseCount(value);
+                setSpouseCount(Number(e.target.value));
+                form.setFieldsValue({
+                  spouseList: Array(Number(e.target.value)).fill({}),
+                });
+                onSetFieldRequest(state, "noOfSpouse", Number(e.target.value));
+                onSetFieldRequest(
+                  state,
+                  "spouseList",
+                  Array(Number(e.target.value)).fill({})
+                );
               }}
               required
             />
@@ -403,7 +408,7 @@ const PersonalInfo: React.FC = () => {
           <Form.List name="spouseList">
             {(fields) => (
               <>
-                {fields.map(({ key, name, ...restField }, index) => (
+                {fields.map(({ key, name, ...restField }) => (
                   <Row key={key} className="w-full justify-between">
                     <Col xs={24} md={11}>
                       <Form.Item
@@ -422,7 +427,7 @@ const PersonalInfo: React.FC = () => {
                           placeholder="Enter spouse name"
                           label="Spouse name"
                           onChange={(e: any) =>
-                            onChangeFormList(index, "name", e.target.value)
+                            onChangeFormList(key, "name", e.target.value)
                           }
                           required
                         />
@@ -448,11 +453,7 @@ const PersonalInfo: React.FC = () => {
                           placeholder="Enter spouse phone number"
                           label="Spouse phone number"
                           onChange={(e: any) =>
-                            onChangeFormList(
-                              index,
-                              "phoneNumber",
-                              e.target.value
-                            )
+                            onChangeFormList(key, "phoneNumber", e.target.value)
                           }
                           required
                         />
@@ -467,19 +468,7 @@ const PersonalInfo: React.FC = () => {
       )}
       <Form.Item
         name="noOfChild"
-        initialValue={childCount}
         rules={[
-          // {
-          //   validator(_rule, value) {
-          //     if (Number(value) < 1) {
-          //       return Promise.reject(
-          //         new Error("Minimum number required is 1")
-          //       );
-          //     } else {
-          //       return Promise.resolve();
-          //     }
-          //   },
-          // },
           {
             pattern: /^\d+$/,
             message: "Only numbers are allowed",
@@ -490,9 +479,16 @@ const PersonalInfo: React.FC = () => {
           placeholder="Enter number of child(ren)"
           label="No of child(ren)"
           onChange={(e: any) => {
-            const value = parseInt(e.target.value) || 0;
-            onSetFieldRequest("noOfChild", value);
-            setChildCount(value);
+            setChildCount(Number(e.target.value));
+            form.setFieldsValue({
+              childList: Array(Number(e.target.value)).fill({}),
+            });
+            onSetFieldRequest(state, "noOfChild", Number(e.target.value));
+            onSetFieldRequest(
+              state,
+              "childList",
+              Array(Number(e.target.value)).fill({})
+            );
           }}
           required
         />
@@ -521,13 +517,13 @@ const PersonalInfo: React.FC = () => {
                         <Checkbox
                           onChange={(e: any) =>
                             handleCheckboxChange(
-                              index,
+                              key,
                               "inSchool",
                               e.target.checked
                             )
                           }
-                          checked={checkboxStates[index].inSchool}
-                          value={checkboxStates[index].inSchool}
+                          // checked={checkboxStates[index]?.inSchool}
+                          // value={checkboxStates[index]?.inSchool}
                           className="ml-2"
                         />
                       </>
@@ -549,7 +545,7 @@ const PersonalInfo: React.FC = () => {
                           placeholder="Enter child name"
                           label="Child name"
                           onChange={(e: any) =>
-                            handleCheckboxChange(index, "name", e.target.value)
+                            handleCheckboxChange(key, "name", e.target.value)
                           }
                           required
                         />
@@ -576,7 +572,7 @@ const PersonalInfo: React.FC = () => {
                           label="Child phone number"
                           onChange={(e: any) =>
                             handleCheckboxChange(
-                              index,
+                              key,
                               "phoneNumber",
                               e.target.value
                             )
@@ -603,7 +599,7 @@ const PersonalInfo: React.FC = () => {
                           label="Child age"
                           onChange={(e: any) =>
                             handleCheckboxChange(
-                              index,
+                              key,
                               "age",
                               Number(e.target.value)
                             )

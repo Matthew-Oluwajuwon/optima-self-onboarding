@@ -77,7 +77,7 @@ const NINValidation: React.FC = () => {
           maxLength={11}
           onChange={(e: any) => {
             form.setFieldValue("nin", e.target.value);
-            onSetFieldRequest("nin", e.target.value);
+            onSetFieldRequest(state, "nin", e.target.value);
           }}
           required
         />

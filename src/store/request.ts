@@ -6,7 +6,7 @@ export class NinValidation {
   dateOfBirth: string = "";
 }
 
-export class SubmitOnabording {
+export class SubmitOnboarding {
   nin: string = "";
   otpCode: string = "";
   phoneNumber: string = "";

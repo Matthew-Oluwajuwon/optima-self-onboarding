@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
-import { SubmitOnabording } from "../store/request";
+import { SubmitOnboarding } from "../store/request";
 import { useStore } from "../store";
 import { axiosInstance } from "../../api/axiosInstance.config";
 import { endpoints } from "../../api/endpoints";
 
 interface SubmitOnboardingFunction {
   onSubmit: (otpCode: any) => void;
-  onSendOtp: (request: SubmitOnabording) => void;
+  onSendOtp: (request: SubmitOnboarding) => void;
 }
 
 const useSubmitOnboarding = (): SubmitOnboardingFunction => {
   const { setState, request: fieldRequest } = useStore((state) => state);
 
   const onSendOtp = useCallback(
-    (request: SubmitOnabording) => {
+    (request: SubmitOnboarding) => {
       setState("loading", true);
       axiosInstance
         .get(endpoints.sendOtp + request.phoneNumber + `/${fieldRequest?.nin}`)

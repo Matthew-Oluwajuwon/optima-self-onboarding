@@ -8,7 +8,6 @@ const ResponseModal: React.FC = () => {
   const { showResponseModal, record, current, setState, setAllState } =
     useStore((state) => state);
   const handleClick = useCallback(() => {
-    if (record?.responseCode === 200) {
       setState("current", current === 1 ? 0 : 1);
       if (current === 1) {
         setAllState({
@@ -28,10 +27,9 @@ const ResponseModal: React.FC = () => {
           setAllState: () => {},
           setState: () => {},
         });
-      }
     }
     setState("showResponseModal", false);
-  }, [current, record?.responseCode, setAllState, setState]);
+  }, [current, setAllState, setState]);
 
   return (
     <Modal

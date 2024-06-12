@@ -33,7 +33,7 @@ const StepForm: React.FC = () => {
       <h1 className="text-[#1D2939] text-xl lg:text-3xl font-euclid-semibold">
         Self Onboarding
       </h1>
-      {steps[state.current]?.content}
+      {steps[state.current as number]?.content}
     </div>
   );
 };

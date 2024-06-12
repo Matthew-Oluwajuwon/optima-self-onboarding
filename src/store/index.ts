@@ -2,7 +2,7 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
 
 export interface State {
-  current: number;
+  current?: number;
   genders: Array<string>;
   religions: Array<string>;
   processing: boolean;

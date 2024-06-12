@@ -61,7 +61,7 @@ const PersonalInfo: React.FC = () => {
     onSetFieldRequest(state, "spouseList", initialSpouseList);
     onSetFieldRequest(state, "noOfChild", childCount);
     onSetFieldRequest(state, "childList", initialChildList);
-  }, [form, spouseCount, childCount, onSetFieldRequest]);
+  }, [form,  onSetFieldRequest]);
 
   return (
     <Form
@@ -504,12 +504,12 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       {...restField}
                       name={[name, "inSchool"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Missing child school status",
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: "Missing child school status",
+                      //   },
+                      // ]}
                       className="w-full"
                     >
                       <>

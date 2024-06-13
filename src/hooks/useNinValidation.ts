@@ -20,6 +20,7 @@ const useNinValidation = (): NinValidationFunction => {
           setState("record", data.data);
           setState("loading", false);
           setState("showResponseModal", true);
+          sessionStorage.setItem("***", request?.nin)
         })
         .catch((error) => {
           setState("record", error.response.data);

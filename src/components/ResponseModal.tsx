@@ -5,30 +5,30 @@ import failed from "../assets/images/failed.svg";
 import success from "../assets/images/success.svg";
 
 const ResponseModal: React.FC = () => {
-  const { showResponseModal, record, current, setState, setAllState } =
+  const { showResponseModal, record, current, setState } =
     useStore((state) => state);
   const handleClick = useCallback(() => {
       setState("current", current === 1 ? (record?.responseCode === 200 ? 0 : 1) : 1);
-      if (current === 1) {
-        setAllState({
-          genders: [],
-          religions: [],
-          processing: false,
-          lga: [],
-          moneyRange: [],
-          offenses: [],
-          maritalStatus: [],
-          request: undefined,
-          showResponseModal: false,
-          loading: false,
-          record: undefined,
-          showOtp: false,
-          setAllState: () => {},
-          setState: () => {},
-        });
-    }
+    //   if (current === 1) {
+    //     setAllState({
+    //       genders: [],
+    //       religions: [],
+    //       processing: false,
+    //       lga: [],
+    //       moneyRange: [],
+    //       offenses: [],
+    //       maritalStatus: [],
+    //       request: undefined,
+    //       showResponseModal: false,
+    //       loading: false,
+    //       record: undefined,
+    //       showOtp: false,
+    //       setAllState: () => {},
+    //       setState: () => {},
+    //     });
+    // }
     setState("showResponseModal", false);
-  }, [current, record?.responseCode, setAllState, setState]);
+  }, [current, record?.responseCode, setState]);
 
   return (
     <Modal

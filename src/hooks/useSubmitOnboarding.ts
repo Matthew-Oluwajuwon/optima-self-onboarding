@@ -17,7 +17,7 @@ const useSubmitOnboarding = (): SubmitOnboardingFunction => {
     (request: SubmitOnboarding) => {
       setState("loading", true);
       axiosInstance
-        .get(endpoints.sendOtp + request.phoneNumber + `/${fieldRequest?.nin}`)
+        .get(endpoints.sendOtp + request.phoneNumber + `/${sessionStorage.getItem("***")}`)
         .then((data) => {
           setState("showOtp", true);
           setState("record", data.data);
@@ -30,7 +30,7 @@ const useSubmitOnboarding = (): SubmitOnboardingFunction => {
           setState("showResponseModal", true);
         });
     },
-    [fieldRequest?.nin, setState]
+    [setState]
   );
 
   const onSubmit = useCallback(
@@ -43,6 +43,7 @@ const useSubmitOnboarding = (): SubmitOnboardingFunction => {
           setState("showResponseModal", true);
           setState("record", data.data);
           setState("showOtp", false);
+          sessionStorage.clear()
         })
         .catch((error) => {
           setState("record", error.response.data);

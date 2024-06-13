@@ -363,7 +363,6 @@ const PersonalInfo: React.FC = () => {
           }))}
         />
       </Form.Item>
-
       {state.request?.maritalStatus?.toLowerCase() === "married" && (
         <>
           <Form.Item

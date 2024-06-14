@@ -8,25 +8,13 @@ const ResponseModal: React.FC = () => {
   const { showResponseModal, record, current, setState } =
     useStore((state) => state);
   const handleClick = useCallback(() => {
+    if (current === 1) {
       setState("current", current === 1 ? (record?.responseCode === 200 ? 0 : 1) : 1);
-    //   if (current === 1) {
-    //     setAllState({
-    //       genders: [],
-    //       religions: [],
-    //       processing: false,
-    //       lga: [],
-    //       moneyRange: [],
-    //       offenses: [],
-    //       maritalStatus: [],
-    //       request: undefined,
-    //       showResponseModal: false,
-    //       loading: false,
-    //       record: undefined,
-    //       showOtp: false,
-    //       setAllState: () => {},
-    //       setState: () => {},
-    //     });
-    // }
+      
+    } else {
+      
+      setState("current", record?.responseCode === 200 ? 1 : 0);
+    }
     setState("showResponseModal", false);
   }, [current, record?.responseCode, setState]);
 
